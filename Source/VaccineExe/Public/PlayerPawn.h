@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "InputActionValue.h" // Enhanced Input 값 처리를 위해 추가
 #include "PlayerPawn.generated.h"
 
 UCLASS()
@@ -14,27 +15,37 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:		
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	// 충돌체 및 외형
+	// 기존 컴포넌트들
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* boxComp;
 
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* meshComp;
 
-	// 총구 위치 및 방향
 	UPROPERTY(EditAnywhere)
 	class UArrowComponent* firePosition;
 
-	// 발사체 원본 BP 클래스를 담을 변수
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABullet> bulletFactory;
 
+	// 1. 폰 이동을 전담할 컴포넌트 추가
+	UPROPERTY(VisibleAnywhere)
+	class UFloatingPawnMovement* movementComp;
+
+	// 2. Enhanced Input 변수 선언
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputMappingContext* defaultMappingContext;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* moveAction; // Axis2D (IA_Move) 사용
+
+	void Move(const FInputActionValue& Value);
+
 private:
-	// 자동 발사 함수 및 타이머 핸들
 	void Fire();
 	FTimerHandle FireTimerHandle;
 };
