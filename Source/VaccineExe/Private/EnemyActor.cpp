@@ -6,6 +6,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Bullet.h"
+#include "PlayerPawn.h"
+#include "VaccineGameModeBase.h"
 
 // Sets default values
 AEnemyActor::AEnemyActor()
@@ -33,6 +35,24 @@ void AEnemyActor::BeginPlay()
 	{
 		BoxComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemyActor::OnOverlap);
 	}
+
+	// 추적 확률 결정
+	int32 RandomValue = FMath::RandRange(1, 100);
+	if (RandomValue <= traceRate)
+	{
+		bIsTracking = true;
+	}
+	else
+	{
+		bIsTracking = false;
+		// 직진 모드일 경우 초기 방향 설정
+		APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+		if (PlayerPawn)
+		{
+			Direction = PlayerPawn->GetActorLocation() - GetActorLocation();
+			Direction.Normalize();
+		}
+	}
 }
 
 // Called every frame
@@ -40,17 +60,25 @@ void AEnemyActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// 1. 플레이어 폰 찾기
-	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (PlayerPawn)
+	if (bIsTracking)
 	{
-		// 2. 방향 벡터 계산 (목표 위치 - 현재 위치)
-		FVector Direction = PlayerPawn->GetActorLocation() - GetActorLocation();
-		Direction.Normalize();
+		// 실시간 추적 모드: 플레이어 폰 방향 매번 계산
+		APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+		if (PlayerPawn)
+		{
+			Direction = PlayerPawn->GetActorLocation() - GetActorLocation();
+			Direction.Normalize();
+		}
+	}
 
-		// 3. 이동 처리
-		FVector NewLocation = GetActorLocation() + (Direction * MoveSpeed * DeltaTime);
-		SetActorLocation(NewLocation);
+	// 이동 처리
+	FVector NewLocation = GetActorLocation() + (Direction * MoveSpeed * DeltaTime);
+	SetActorLocation(NewLocation);
+
+	// 이동 방향 바라보기
+	if (!Direction.IsNearlyZero())
+	{
+		SetActorRotation(Direction.Rotation());
 	}
 }
 
@@ -60,11 +88,26 @@ void AEnemyActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	ABullet* Bullet = Cast<ABullet>(OtherActor);
 	if (Bullet)
 	{
-		// 2. 총알 파괴
+		// 게임 모드 점수 추가
+		AVaccineGameModeBase* GM = Cast<AVaccineGameModeBase>(GetWorld()->GetAuthGameMode());
+		if (GM)
+		{
+			GM->AddScore(1);
+		}
+
+		// 총알 파괴
 		Bullet->Destroy();
-		// 3. 자신(적) 파괴
+		// 자신(적) 파괴
 		this->Destroy();
-		
-		UE_LOG(LogTemp, Warning, TEXT("Enemy and Bullet Destroyed!"));
+	}
+	// 2. 상대방이 PlayerPawn인지 확인
+	else if (APlayerPawn* Player = Cast<APlayerPawn>(OtherActor))
+	{
+		// 플레이어 HP 감소
+		Player->hp--;
+		UE_LOG(LogTemp, Warning, TEXT("Player Hit! Remaining HP: %d"), Player->hp);
+
+		// 자신(적) 파괴
+		this->Destroy();
 	}
 }

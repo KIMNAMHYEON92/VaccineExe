@@ -39,6 +39,9 @@ void AEnemyFactory::Tick(float DeltaTime)
 				GetActorLocation(),
 				GetActorRotation()
 			);
+
+			// 스폰 후 다음 지연 시간을 랜덤하게 변경 (1~3초)
+			DelayTime = FMath::RandRange(1.0f, 3.0f);
 		}
 
 		// 4. 타이머 초기화

@@ -13,4 +13,11 @@ UCLASS()
 class VACCINEEXE_API AVaccineGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Score")
+	int32 currentScore = 0;
+
+	UFUNCTION(BlueprintCallable, Category = "Score")
+	void AddScore(int32 point);
 };

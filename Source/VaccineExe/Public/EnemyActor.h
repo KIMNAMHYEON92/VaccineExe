@@ -37,7 +37,13 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Status")
 	int32 HP = 3;
 
+	UPROPERTY(EditAnywhere, Category = "Status")
+	int32 traceRate = 50;
+
 private:
+	bool bIsTracking = false;
+	FVector Direction;
+
 	// 수정된 충돌 함수 서명 (OnComponentBeginOverlap 대응)
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

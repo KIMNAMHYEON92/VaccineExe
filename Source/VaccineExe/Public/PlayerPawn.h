@@ -43,6 +43,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* moveAction; // Axis2D (IA_Move) 사용
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
+	int32 hp = 3;
+
 	void Move(const FInputActionValue& Value);
 
 private:

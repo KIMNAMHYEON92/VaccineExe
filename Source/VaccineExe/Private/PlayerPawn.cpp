@@ -15,6 +15,7 @@ APlayerPawn::APlayerPawn()
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
 	SetRootComponent(boxComp);
 	boxComp->SetBoxExtent(FVector(50.0f, 50.0f, 50.0f)); 
+	boxComp->SetCanEverAffectNavigation(false);
 
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	meshComp->SetupAttachment(boxComp);
