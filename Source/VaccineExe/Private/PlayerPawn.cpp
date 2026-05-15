@@ -81,6 +81,12 @@ void APlayerPawn::Move(const FInputActionValue& Value)
 		// X축(전후: W,S)과 Y축(좌우: A,D)
 		FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0f);
 		AddMovementInput(MoveDirection, 1.0f);
+
+		// 이동 방향이 존재할 경우 firePosition의 회전값 업데이트
+		if (!MoveDirection.IsNearlyZero())
+		{
+			firePosition->SetWorldRotation(MoveDirection.Rotation());
+		}
 	}
 }
 
