@@ -107,6 +107,16 @@ void AEnemyActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		Player->hp--;
 		UE_LOG(LogTemp, Warning, TEXT("Player Hit! Remaining HP: %d"), Player->hp);
 
+		// HP가 0 이하라면 게임 오버 메뉴 표시
+		if (Player->hp <= 0)
+		{
+			AVaccineGameModeBase* GM = Cast<AVaccineGameModeBase>(GetWorld()->GetAuthGameMode());
+			if (GM)
+			{
+				GM->ShowMenu();
+			}
+		}
+
 		// 자신(적) 파괴
 		this->Destroy();
 	}

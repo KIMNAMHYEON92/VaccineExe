@@ -18,6 +18,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Score")
 	int32 currentScore = 0;
 
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UMenuWidget> menuWidgetClass;
+
 	UFUNCTION(BlueprintCallable, Category = "Score")
 	void AddScore(int32 point);
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void ShowMenu();
 };
