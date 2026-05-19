@@ -29,7 +29,9 @@ public:
 
 	// 스폰 간격
 	UPROPERTY(EditAnywhere, Category = "Spawn Settings")
-	float DelayTime = 2.0f;
+	float DelayTimeBase = 4.0f;
+	UPROPERTY(EditAnywhere, Category = "Spawn Settings")
+	float DelayTime = 4.0f;
 
 private:
 	// 내부 타이머 변수

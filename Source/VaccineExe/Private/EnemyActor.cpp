@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Bullet.h"
 #include "PlayerPawn.h"
 #include "VaccineGameModeBase.h"
@@ -73,7 +74,8 @@ void AEnemyActor::Tick(float DeltaTime)
 
 	// 이동 처리
 	FVector NewLocation = GetActorLocation() + (Direction * MoveSpeed * DeltaTime);
-	SetActorLocation(NewLocation);
+	NewLocation.Z = 0.0f;
+	SetActorLocation(NewLocation, true);
 
 	// 이동 방향 바라보기
 	if (!Direction.IsNearlyZero())
@@ -94,6 +96,22 @@ void AEnemyActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		{
 			GM->AddScore(1);
 		}
+		
+		// 폭발 효과 및 사운드
+		if (explosionFX)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("explosionFX is VALID! Spawning Niagara..."));
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), explosionFX, GetActorLocation(), FRotator::ZeroRotator, FVector(10.0f));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("explosionFX is NULL! BP assignment failed."));
+		}
+		
+		if (explosionSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), explosionSound, GetActorLocation());
+		}
 
 		// 총알 파괴
 		Bullet->Destroy();
@@ -107,6 +125,12 @@ void AEnemyActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		Player->hp--;
 		UE_LOG(LogTemp, Warning, TEXT("Player Hit! Remaining HP: %d"), Player->hp);
 
+		// 충돌 지점 계산 (중간 지점 + Z축 보정)
+		FVector ImpactPoint = (GetActorLocation() + Player->GetActorLocation()) * 0.5f;
+		ImpactPoint.Z = 100.0f;
+
+		Player->OnHit(ImpactPoint);
+				
 		// HP가 0 이하라면 게임 오버 메뉴 표시
 		if (Player->hp <= 0)
 		{

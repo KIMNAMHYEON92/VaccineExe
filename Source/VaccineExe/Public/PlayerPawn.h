@@ -43,12 +43,25 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* moveAction; // Axis2D (IA_Move) 사용
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
+	UPROPERTY(EditAnywhere, Category = "Status")
 	int32 hp = 3;
 
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	class USoundBase* fireSound;
+
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	class UNiagaraSystem* hitFX;
+
 	void Move(const FInputActionValue& Value);
+
+	void UpgradeWeapon(int32 Level);
+
+	void OnHit(FVector HitLocation);
 
 private:
 	void Fire();
 	FTimerHandle FireTimerHandle;
+
+	float fireRate = 0.5f;
+	bool bIsMultiShot = false;
 };

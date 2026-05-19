@@ -24,5 +24,6 @@ void ABullet::Tick(float DeltaTime)
 
 	// 앞으로 전진하는 로직
 	FVector newLocation = GetActorLocation() + GetActorForwardVector() * moveSpeed * DeltaTime;
-	SetActorLocation(newLocation);
+	newLocation.Z = 0.0f;
+	SetActorLocation(newLocation,true);
 }

@@ -19,7 +19,15 @@ public:
 	int32 currentScore = 0;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UMainWidget> mainWidgetClass;
+
+	UPROPERTY()
+	class UMainWidget* mainUI;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<class UMenuWidget> menuWidgetClass;
+
+	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Score")
 	void AddScore(int32 point);

@@ -34,14 +34,16 @@ void AEnemyFactory::Tick(float DeltaTime)
 		// 3. 널 체크 및 스폰 로직
 		if (GetWorld() && Enemy)
 		{
+			FVector SpawnLocation = GetActorLocation() + FVector(FMath::RandRange(-300.f, 300.f), FMath::RandRange(-300.f, 300.f), 0.f);
+
 			GetWorld()->SpawnActor<AEnemyActor>(
 				Enemy,
-				GetActorLocation(),
+				SpawnLocation,
 				GetActorRotation()
 			);
 
 			// 스폰 후 다음 지연 시간을 랜덤하게 변경 (1~3초)
-			DelayTime = FMath::RandRange(1.0f, 3.0f);
+			DelayTime = DelayTimeBase + FMath::RandRange(1.0f, 3.0f);
 		}
 
 		// 4. 타이머 초기화

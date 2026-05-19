@@ -6,7 +6,11 @@
 #include "EnhancedInputComponent.h"             // 입력 바인딩
 #include "EnhancedInputSubsystems.h"            // 서브시스템
 #include "Bullet.h"
+#include "MainWidget.h"
+#include "NiagaraFunctionLibrary.h"
 #include "TimerManager.h"
+#include "VaccineGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 
 APlayerPawn::APlayerPawn()
 {
@@ -39,6 +43,13 @@ void APlayerPawn::BeginPlay()
 void APlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// 화면 이탈 방지 Clamp 적용
+	FVector CurrentLocation = GetActorLocation();
+	CurrentLocation.X = FMath::Clamp(CurrentLocation.X, -600.0f, 600.0f);
+	CurrentLocation.Y = FMath::Clamp(CurrentLocation.Y, -1000.0f, 1000.0f);
+	CurrentLocation.Z = 0.0f;
+	SetActorLocation(CurrentLocation,true);
 }
 
 void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -95,9 +106,63 @@ void APlayerPawn::Fire()
 {
 	if (!GetWorld() || !bulletFactory) return;
 
+	// 기본 발사
 	GetWorld()->SpawnActor<ABullet>(
 		bulletFactory,
 		firePosition->GetComponentLocation(),
 		firePosition->GetComponentRotation()
 	);
+
+	// 발사 사운드 재생
+	if (fireSound)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), fireSound);
+	}
+
+	// 산탄 모드 (Level 3)
+	if (bIsMultiShot)
+	{
+		FRotator Rotation = firePosition->GetComponentRotation();
+		
+		// +15도
+		FRotator LeftRot = Rotation;
+		LeftRot.Yaw += 15.0f;
+		GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition->GetComponentLocation(), LeftRot);
+
+		// -15도
+		FRotator RightRot = Rotation;
+		RightRot.Yaw -= 15.0f;
+		GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition->GetComponentLocation(), RightRot);
+	}
+}
+
+void APlayerPawn::UpgradeWeapon(int32 Level)
+{
+	if (Level == 2 && fireRate > 0.2f)
+	{
+		fireRate = 0.2f;
+		// 타이머 재설정
+		GetWorldTimerManager().ClearTimer(FireTimerHandle);
+		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &APlayerPawn::Fire, fireRate, true);
+		UE_LOG(LogTemp, Warning, TEXT("Weapon Upgraded: Level 2 (Rapid Fire)"));
+	}
+	else if (Level == 3 && !bIsMultiShot)
+	{
+		bIsMultiShot = true;
+		UE_LOG(LogTemp, Warning, TEXT("Weapon Upgraded: Level 3 (Multi Shot)"));
+	}
+}
+
+void APlayerPawn::OnHit(FVector HitLocation)
+{
+	if (hitFX)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFX, HitLocation, FRotator::ZeroRotator, FVector(10.0f));
+	}
+
+	AVaccineGameModeBase* GM = Cast<AVaccineGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GM && GM->mainUI)
+	{
+		GM->mainUI->UpdateHP(hp);
+	}
 }

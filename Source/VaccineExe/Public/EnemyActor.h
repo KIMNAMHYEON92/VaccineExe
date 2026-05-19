@@ -40,6 +40,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Status")
 	int32 traceRate = 50;
 
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	class UNiagaraSystem* explosionFX;
+
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	class USoundBase* explosionSound;
+
 private:
 	bool bIsTracking = false;
 	FVector Direction;
