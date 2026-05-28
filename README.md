@@ -15,8 +15,7 @@
 <br>
 
 ## 📄 핵심 문서 및 실행 파일 링크
-* **[상세 기술서]** [프로젝트 진행 보고서 v1 (Google Docs)](https://docs.google.com/document/d/1_wnANSRiqT3UyT2vhSZk4mXNwpR7CCpefGzOjv-nsN0/edit?usp=sharing)
-* **[실행 파일]** [Win64 독립형 패키징 릴리즈 빌드 다운로드](https://github.com/)
+* **[상세 기술서]** [프로젝트 진행 보고서 v1 (Google Docs)]([https://docs.google.com/document/d/1_wnANSRiqT3UyT2vhSZk4mXNwpR7CCpefGzOjv-nsN0/edit?usp=sharing](https://docs.google.com/document/d/1VCnnZ37Y72J8GXcGspiz0Sg4_V7wMLEAmvW7tzRnpiQ/edit?usp=sharing))
 
 <br>
 
