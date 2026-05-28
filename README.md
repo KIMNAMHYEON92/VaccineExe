@@ -9,13 +9,14 @@
 ## 🎮 플레이 데모 및 핵심 메커니즘
 | 🚀 런타임 무기 자동 성장 (Rapid/Multi-Shot) | 🛡️ 수학적 Clamp 공간 통제 및 카이팅 조작 |
 | :---: | :---: |
-| ![Weapon Evolution](https://img.shields.io/badge/Demo-GIF_Placeholder-blue?style=for-the-black) | ![Space Control](https://img.shields.io/badge/Demo-GIF_Placeholder-cyan?style=for-the-black) |
+| ![Weapon Evolution](https://i.imgur.com/vfXBpGi.gif) | ![Space Control](https://i.imgur.com/U6ohdbj.gif) |
 *※ GitHub Issue 레이어 구동 후 5~10초 분량의 실제 플레이 캡처 GIF 링크를 위 배지 영역에 치환하여 삽입할 수 있습니다.*
 
 <br>
 
 ## 📄 핵심 문서 및 실행 파일 링크
-* **[상세 기술서]** [프로젝트 진행 보고서 v1 (Google Docs)]([https://docs.google.com/document/d/1_wnANSRiqT3UyT2vhSZk4mXNwpR7CCpefGzOjv-nsN0/edit?usp=sharing](https://docs.google.com/document/d/1VCnnZ37Y72J8GXcGspiz0Sg4_V7wMLEAmvW7tzRnpiQ/edit?usp=sharing))
+* **[상세 기술서]** [프로젝트 진행 보고서 v1 (Google Docs)](https://docs.google.com/document/d/1VCnnZ37Y72J8GXcGspiz0Sg4_V7wMLEAmvW7tzRnpiQ/edit?usp=sharing)
+* **[실행 파일]** [Win64 독립형 패키징 릴리즈 빌드 다운로드](https://drive.google.com/file/d/1dqGlpgJgK-c_pLwwU9C8vReYuMjjji24/view?usp=sharing)
 
 <br>
 
@@ -65,7 +66,22 @@
 ### 2. 물리 볼륨 한계 돌파를 위한 수학적 경계선 가두리 기법 최적화
 * **문제 상황:** 화면 이탈 방지를 위해 `Blocking Volume` 바리케이드를 쳤으나, 고속 가속도 진입 시 플레이어가 벽을 뚫고 나가거나 물리 엔진 꼬임으로 벽면에 끼여 영구 고립되는 예외 버그 발생.
 * **해결 방식:** 불필요한 물리 엔진 충돌 차단(`Block`) 연산 레이어를 맵에서 전부 삭제하고, 프로그래머가 좌표를 수학적으로 완전 지배하는 **`FMath::Clamp` 함수 알고리즘 기법**을 `Tick` 함수에 배치.
-  ```cpp
+```cpp
   CurrentLocation.X = FMath::Clamp(CurrentLocation.X, -600.0f, 600.0f);
   CurrentLocation.Y = FMath::Clamp(CurrentLocation.Y, -1000.0f, 1000.0f);
   SetActorLocation(CurrentLocation, true);
+```
+
+* **결과:** 무거운 물리 연산 비용 제거로 **엔진 최적화 마진 확보**, 어떠한 가속도에서도 절대 화면을 탈출할 수 없는 100% 신뢰도의 수학적 펜스 구축.
+
+### 3. 제품 릴리즈 안정성을 위한 리스크 관리와 스펙-아웃(Spec-out) 결단
+
+* **문제 상황:** 고강도 `Emissive Material (강도 50.0)` 및 포스트 프로세스의 `Bloom` 효과가 화면을 채우자, 엔진 내 자동 노출(Auto Exposure) 장치가 눈부심을 막기 위해 화면 전체 노출값을 최하단으로 압착함. 이로 인해 반투명 성격의 나이아가라 파티클 시스템이 암전 영역에 파묻혀 식별되지 않는 그래픽 파이프라인 충돌 확인.
+* **해결 방식:** 셰이더 및 포스트 프로세싱 렌더 레이어 전면 수정 시 마감 데드라인 내 빌드 불안정성 및 크래시 리스크가 고조됨을 계산함. 1인 개발 창업가 관점에서 불완전한 이펙트에 매몰되는 것보다 "단 하나의 예외 크래시도 없는 완벽하게 안정적인 마스터 패키징 빌드를 데드라인 내에 시장(평가장)에 릴리즈하는 것"이 최우선 핵심 가치라고 판단, 파티클 연산 코드를 과감히 **스펙-아웃(Spec-out)** 처리하고 사운드 시스템 플레이 환경을 극대화하는 방향으로 동적 사양 타협 수행.
+* **결과:** 마감 시한 전 단 한 번의 빌드 실패 없이 **Windows 64비트 독립형 실행 폴더 패키징 릴리즈에 완벽 성공.** 해당 그래픽 파이프라인 매커니즘 충돌 건은 향후 과제(Future Work) 기술 명세서로 이관하여 리스크 관리 문서화 완료.
+
+## 📎 보고서 및 향후 과제 (Future Works)
+
+* 본 프로젝트의 상세한 아키텍처 설계 배경, 컴파일 설정 모듈화 과정 및 일자별 상세 디버깅 기록은 상단 첨부된 [프로젝트 진행 보고서 v1]에서 투명하게 확인하실 수 있습니다.
+* **Next Steps:** 1. 데이터 주도(Data-Driven) 설계를 위한 외부 CSV 시트 및 `UDataTable` 구조 도입 연동.
+2. 포스트 프로세스 수동 노출(Manual Exposure) 밸런싱을 통한 나이아가라 네온 파티클 가시성 확보 및 그래픽 파이프라인 최적화.
