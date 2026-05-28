@@ -9,7 +9,7 @@
 ## 🎮 플레이 데모 및 핵심 메커니즘
 | 🚀 런타임 무기 자동 성장 (Rapid/Multi-Shot) | 🛡️ 수학적 Clamp 공간 통제 및 카이팅 조작 |
 | :---: | :---: |
-| ![Weapon Evolution](https://i.imgur.com/vfXBpGi.gif) | ![Space Control](https://i.imgur.com/U6ohdbj.gif) |
+| ![Weapon Evolution](https://i.imgur.com/C9WWOtn.gif) | ![Space Control](https://i.imgur.com/U6ohdbj.gif) |
 *※ GitHub Issue 레이어 구동 후 5~10초 분량의 실제 플레이 캡처 GIF 링크를 위 배지 영역에 치환하여 삽입할 수 있습니다.*
 
 <br>
