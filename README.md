@@ -10,7 +10,6 @@
 | 🚀 런타임 무기 자동 성장 (Rapid/Multi-Shot) | 🛡️ 수학적 Clamp 공간 통제 및 카이팅 조작 |
 | :---: | :---: |
 | ![Weapon Evolution](https://i.imgur.com/C9WWOtn.gif) | ![Space Control](https://i.imgur.com/U6ohdbj.gif) |
-*※ GitHub Issue 레이어 구동 후 5~10초 분량의 실제 플레이 캡처 GIF 링크를 위 배지 영역에 치환하여 삽입할 수 있습니다.*
 
 <br>
 
@@ -66,6 +65,7 @@
 ### 2. 물리 볼륨 한계 돌파를 위한 수학적 경계선 가두리 기법 최적화
 * **문제 상황:** 화면 이탈 방지를 위해 `Blocking Volume` 바리케이드를 쳤으나, 고속 가속도 진입 시 플레이어가 벽을 뚫고 나가거나 물리 엔진 꼬임으로 벽면에 끼여 영구 고립되는 예외 버그 발생.
 * **해결 방식:** 불필요한 물리 엔진 충돌 차단(`Block`) 연산 레이어를 맵에서 전부 삭제하고, 프로그래머가 좌표를 수학적으로 완전 지배하는 **`FMath::Clamp` 함수 알고리즘 기법**을 `Tick` 함수에 배치.
+
 ```cpp
   CurrentLocation.X = FMath::Clamp(CurrentLocation.X, -600.0f, 600.0f);
   CurrentLocation.Y = FMath::Clamp(CurrentLocation.Y, -1000.0f, 1000.0f);
